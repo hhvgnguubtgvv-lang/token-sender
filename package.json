@@ -1,0 +1,6 @@
+{
+  "name": "token-sender",
+  "dependencies": {
+    "web3": "^4.2.0"
+  }
+}

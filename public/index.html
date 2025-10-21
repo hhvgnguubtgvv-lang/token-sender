@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transfer Tokens</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+    <div style="max-width: 500px; margin: 50px auto; padding: 20px;">
+        <h2>Transfer ERC20 Tokens</h2>
+        
+        <!-- УБРАЛ поля для приватного ключа и адреса кошелька -->
+        
+        <!-- АДРЕС КОНТРАКТА ТОКЕНА -->
+        <input type="text" id="tokenContract" placeholder="Адрес контракта токена (0x...)" style="width: 100%; padding: 10px; margin: 5px 0;"><br>
+        
+        <!-- АДРЕС ПОЛУЧАТЕЛЯ -->
+        <input type="text" id="recipientAddress" placeholder="Адрес получателя (0x...)" style="width: 100%; padding: 10px; margin: 5px 0;"><br>
+        
+        <!-- СУММА ДЛЯ ПЕРЕВОДА -->
+        <input type="number" id="amount" placeholder="Количество токенов" step="any" style="width: 100%; padding: 10px; margin: 5px 0;"><br>
+        
+        <button onclick="transferTokens()" style="width: 100%; padding: 15px; background: #007bff; color: white; border: none; cursor: pointer;">
+            Transfer Tokens
+        </button>
+        
+        <div id="status" style="margin: 20px 0; padding: 10px;"></div>
+    </div>
+
+    <script>
+        async function transferTokens() {
+            const tokenContract = document.getElementById('tokenContract').value;
+            const recipientAddress = document.getElementById('recipientAddress').value;
+            const amount = document.getElementById('amount').value;
+
+            if (!tokenContract || !recipientAddress || !amount) {
+                document.getElementById('status').innerHTML = 'Заполни все поля';
+                return;
+            }
+
+            try {
+                document.getElementById('status').innerHTML = 'Обработка...';
+                
+                // Отправляем запрос на наш API
+                const response = await fetch('/api/transfer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tokenContract: tokenContract,
+                        recipientAddress: recipientAddress,
+                        amount: amount
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('status').innerHTML = 
+                        `Успех! Транзакция: <a href="https://polygonscan.com/tx/${result.transactionHash}" target="_blank">${result.transactionHash}</a>`;
+                } else {
+                    document.getElementById('status').innerHTML = 'Ошибка: ' + result.error;
+                }
+                    
+            } catch (error) {
+                document.getElementById('status').innerHTML = 'Ошибка: ' + error.message;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
