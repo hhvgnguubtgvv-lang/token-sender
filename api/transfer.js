@@ -1,4 +1,4 @@
-const Web3 = require('web3');
+import Web3 from 'web3';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -8,12 +8,12 @@ export default async function handler(req, res) {
   try {
     const { tokenContract, recipientAddress, amount } = req.body;
     
-    // ТВОИ КЛЮЧИ (добавишь в настройках Vercel)
+    // ТВОИ КЛЮЧИ из Vercel Environment Variables
     const PRIVATE_KEY = process.env.PRIVATE_KEY;
     const SENDER_ADDRESS = process.env.SENDER_ADDRESS;
     
+    // НОВЫЙ СИНТАКСИС Web3
     const web3 = new Web3('https://polygon-rpc.com');
-    const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
     
     const ERC20_ABI = [
       {
@@ -53,6 +53,7 @@ export default async function handler(req, res) {
       chainId: 137
     };
 
+    // ПРАВИЛЬНОЕ ПОДПИСАНИЕ ТРАНЗАКЦИИ
     const signedTx = await web3.eth.accounts.signTransaction(transaction, PRIVATE_KEY);
     const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
@@ -62,6 +63,7 @@ export default async function handler(req, res) {
     });
     
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({
       success: false,
       error: error.message
