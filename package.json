@@ -1,5 +1,6 @@
 {
   "name": "token-sender",
+  "type": "module",
   "dependencies": {
     "web3": "^4.2.0"
   }
